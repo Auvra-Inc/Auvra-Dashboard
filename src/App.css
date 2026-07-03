@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Clash Display", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Damion", cursive;
+}
