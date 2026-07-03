@@ -20,7 +20,7 @@ export function Header({ onToggleNav, navOpen }: HeaderProps) {
   return (
     <header className="h-20 bg-white/80 backdrop-blur-md border-b border-zinc-200/60 px-8 flex items-center justify-between sticky top-0 z-10 font-sans">
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center align-center gap-4">
         {/* Nav toggle for small screens only */}
         <button
           onClick={onToggleNav}
