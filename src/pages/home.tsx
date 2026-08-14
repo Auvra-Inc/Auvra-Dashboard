@@ -1,53 +1,89 @@
 import { DashboardCard } from "../components/ui/dashboardCard";
 import { GrowthChart } from "../components/ui/growthChart";
+import { useEffect, useState } from "react";
+// import api from "../utils/api";
 
 export function Home() {
+  const [loaded, setLoaded] = useState(false);
+  const [metrics, setMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadMetrics = async () => {
+      try {
+        // const res = await api.dashboard.getMetrics();
+        const res = await fetch('/mock-api.json');
+        const data = await res.json();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        if (mounted) {
+          setMetrics(data.metrics);
+          setLoaded(true);
+        }
+      } catch (error) {
+        if (mounted) {
+          setLoaded(false);
+          setMetrics(null);
+        }
+      }
+    };
+
+    loadMetrics();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <div className="space-y-6">
       
       <div>
-        <h2 className="text-2xl font-semibold text-zinc-900 tracking-tight">Platform Overview</h2>
-        <p className="text-sm font-medium text-zinc-500 mt-1">Real-time metrics across all cultural preservation activities.</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-zinc-900 tracking-tight">Platform Overview</h2>
+            <p className="text-sm font-medium text-zinc-500 mt-1">Real-time metrics across all cultural preservation activities.</p>
+          </div>
+          <div className="text-sm font-medium text-zinc-500">API: {loaded ? <span className="text-green-600">connected</span> : <span className="text-red-500">disconnected</span>}</div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <DashboardCard 
           title="Total Users" 
-          value="12,482" 
+          value={metrics ? metrics.totalUsers.toLocaleString() : "--"} 
           trend="up" 
-          trendValue="+14.2%" 
+          trendValue={metrics?.growth?.users || "+0%"} 
           subtitle="Creators, Collectors, and Families"
         />
         <DashboardCard 
           title="Total Revenue" 
-          value="$84,230.50" 
+          value={metrics ? `$${metrics.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "--"} 
           trend="up" 
-          trendValue="+8.4%" 
+          trendValue={metrics?.growth?.revenue || "+0%"} 
           subtitle="Vault, Community, and Badges"
         />
         <DashboardCard 
           title="Languages Preserved" 
-          value="142" 
+          value={metrics ? "142" : "--"} 
           trend="up" 
           trendValue="+3 this week" 
           subtitle="Across all active communities"
         />
         <DashboardCard 
           title="Cultural Entries" 
-          value="8,904" 
+          value={metrics ? "8,904" : "--"} 
           trend="neutral" 
           subtitle="Total verified platform footprints"
         />
         <DashboardCard 
           title="Active Communities" 
-          value="315" 
+          value={metrics ? "315" : "--"} 
           trend="down" 
           trendValue="-1.2%" 
           subtitle="Communities with recent activity"
         />
         <DashboardCard 
           title="Countries Reached" 
-          value="48" 
+          value={metrics ? "48" : "--"} 
           trend="up" 
           trendValue="+2" 
           subtitle="Global footprint distribution"

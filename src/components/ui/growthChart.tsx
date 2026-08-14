@@ -24,7 +24,7 @@ export function GrowthChart() {
         <div>
           <h3 className="text-sm font-semibold text-zinc-600 tracking-wide">Platform Growth</h3>
           <div className="flex items-baseline gap-3 mt-1">
-            <span className="text-2xl font-semibold text-zinc-900 tracking-tight">$45,000.00</span>
+            <span className="text-2xl font-semibold text-zinc-900 tracking-tight">$45,200.50</span>
             <div className="flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-600">
               <ArrowUpRight className="w-3 h-3 mr-1" />
               +12.4%

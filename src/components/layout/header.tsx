@@ -21,7 +21,6 @@ export function Header({ onToggleNav, navOpen }: HeaderProps) {
     <header className="h-20 bg-white/80 backdrop-blur-md border-b border-zinc-200/60 px-8 flex items-center justify-between sticky top-0 z-10 font-sans">
       
       <div className="flex items-center align-center gap-4">
-        {/* Nav toggle for small screens only */}
         <button
           onClick={onToggleNav}
           aria-label="Toggle navigation"
@@ -57,11 +56,6 @@ export function Header({ onToggleNav, navOpen }: HeaderProps) {
           <Bell className="w-4 h-4" />
           {/* Notification Dot */}
           <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-black rounded-full"></span>
-        </button>
-
-        {/* Optimize Button (from the design) */}
-        <button className="ml-2 px-4 py-2 bg-black hover:bg-zinc-800 text-white text-sm font-semibold tracking-wide rounded-md transition-all">
-          Optimize
         </button>
       </div>
     </header>

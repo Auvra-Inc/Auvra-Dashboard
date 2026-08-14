@@ -15,16 +15,25 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     
-    // Simulate Auth
-    setTimeout(() => {
-      if (email && password) {
-        localStorage.setItem("auvra_user", JSON.stringify({ email, name: "Vincent" }));
-        navigate("/");
-      } else {
-        setError("Invalid credentials. Please try again.");
-      }
+    try {
+      // const res: any = await api.auth.login({ email, password });
+      // const res: any = await api.auth.login({ email, password });
+
+// 1. Simulate a 1.5 second network delay to test your spinner
+      await new Promise(resolve => setTimeout(resolve, 1500)); 
+
+// 2. Fake the exact response the backend will eventually send
+      const res: any = { token: "fake_jwt_token_for_testing" };
+      const token = res?.token || res?.jwt || res?.accessToken;
+      if (token) localStorage.setItem('token', token);
+      localStorage.setItem("auvra_user", JSON.stringify({ email }));
+      // Temporary scaffold-only redirect: remove when real auth is connected.
+      navigate("/app");
+    } catch (err: any) {
+      setError(err?.message || 'Login failed');
+    } finally {
       setLoading(false);
-    }, 1200);
+    }
   };
 
   return (
