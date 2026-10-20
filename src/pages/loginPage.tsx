@@ -1,123 +1,179 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AuthLayout } from "../components/auth/authLayout";
+import {
+  AuthHeading,
+  AuthStepper,
+  Field,
+  Notice,
+  PasswordInput,
+  PrimaryButton,
+  SessionFootnote,
+  TextInput,
+} from "../components/auth/authUi";
+import type { ApiError } from "../components/auth/authHelpers";
+import { SUPER_ADMIN, saveSessionUser, saveToken } from "../auth/session";
+import type { SessionUser } from "../auth/session";
+import alertIcon from "../assets/auth/alert.svg";
+import checkboxCheckIcon from "../assets/auth/checkbox-check.svg";
+
+type LoginError =
+  | { kind: "locked"; until?: string }
+  | { kind: "password" }
+  | { kind: "generic"; message: string };
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const location = useLocation();
+  const [email, setEmail] = useState<string>(location.state?.email ?? "");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<LoginError | null>(null);
+
+  const locked = error?.kind === "locked";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (locked) {
+      navigate("/forgot-password", { state: { email } });
+      return;
+    }
     setLoading(true);
-    setError("");
-    
+    setError(null);
+
     try {
       // const res: any = await api.auth.login({ email, password });
-      // const res: any = await api.auth.login({ email, password });
 
-// 1. Simulate a 1.5 second network delay to test your spinner
-      await new Promise(resolve => setTimeout(resolve, 1500)); 
+      // Simulated network delay until the backend is connected
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      // Mock: any email signs in as a Super Admin, except analyst@… which signs in as a Data Analyst
+      // so restricted pages can be tried before the backend exists
+      const isAnalyst = email.toLowerCase().startsWith("analyst@");
+      const res: { requires2fa: boolean; twoFactorToken?: string; token?: string; user: SessionUser } = isAnalyst
+        ? { requires2fa: false, token: "fake_jwt_token_for_testing", user: { name: "Amara Okeke", email, role: "Data Analyst" } }
+        : { requires2fa: true, twoFactorToken: "fake_2fa_token_for_testing", user: { name: "Emmanuel John", email, role: SUPER_ADMIN } };
 
-// 2. Fake the exact response the backend will eventually send
-      const res: any = { token: "fake_jwt_token_for_testing" };
-      const token = res?.token || res?.jwt || res?.accessToken;
-      if (token) localStorage.setItem('token', token);
-      localStorage.setItem("auvra_user", JSON.stringify({ email }));
-      // Temporary scaffold-only redirect: remove when real auth is connected.
-      navigate("/app");
-    } catch (err: any) {
-      setError(err?.message || 'Login failed');
+      saveSessionUser(res.user);
+      localStorage.setItem("auvra_remember", String(remember));
+
+      // 2FA is mandatory only for Super Admin (PRD §5), so the backend decides
+      if (res.requires2fa) {
+        navigate("/login/verify", { state: { email, twoFactorToken: res.twoFactorToken } });
+      } else {
+        if (res.token) saveToken(res.token);
+        navigate("/app");
+      }
+    } catch (e) {
+      const err = e as ApiError;
+      if (err?.status === 423) setError({ kind: "locked", until: err?.payload?.lockedUntil });
+      else if (err?.status === 401) setError({ kind: "password" });
+      else setError({ kind: "generic", message: err?.message || "Login failed" });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    // font-sans here applies Clash Display to everything inside
-    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4 sm:p-8 font-sans selection:bg-black selection:text-white">
+    <AuthLayout
+      eyebrow="Keeping Culture Alive."
+      title="The Permanent Home for Human Culture."
+      description="Sign in to look after the stories, languages and traditions people trust Auvra to keep."
+    >
+      <AuthStepper current={1} />
 
-      {/* Subtle background grid/noise for texture */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none"></div>
+      <div className="mt-10 text-center">
+        <AuthHeading className="text-[32px]">Welcome back</AuthHeading>
+        <div className="mt-1 text-[14px] text-[#6b7180]">Sign in to Auvra Admin</div>
+      </div>
 
-      <div className="w-full max-w-[380px] relative z-10">
-
-        {/* Brand Header */}
-        <div className="flex flex-col items-center mb-8">
-          
-          {/* Increased size, tightened tracking, and bumped weight for the Clash Display heading */}
-          <h1 className="text-xl sm:text-2xl font-bold text-black tracking-tight leading-snug">Log in to Auvra</h1>
-          <p className="text-sm font-medium text-zinc-500 mt-2">Enter your details to access the workspace</p>
-        </div>
-
-        {/* The Card */}
-        <div className="bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_10px_20px_-10px_rgba(0,0,0,0.02)] border border-zinc-200/60 p-6 sm:p-8">
-
-          <form onSubmit={handleLogin} className="space-y-5">
-
-            {error && (
-              <div className="bg-red-50 text-red-600 border border-red-100 text-sm px-4 py-3 rounded-md flex items-start gap-2">
-                <span className="leading-tight font-medium">{error}</span>
+      <form onSubmit={handleLogin} className="mt-[23px]">
+        {error?.kind === "locked" && (
+          <div className="mb-[18px]">
+            <Notice tone="error" icon={alertIcon}>
+              <div className="font-bold">Account locked for 15 minutes.</div>
+              <div>
+                There were 5 wrong passwords in a row. Try again{error.until ? ` at ${error.until}` : " later"}, or reset
+                your password.
               </div>
-            )}
+            </Notice>
+          </div>
+        )}
+        {error?.kind === "generic" && (
+          <div className="mb-[18px]">
+            <Notice tone="error" icon={alertIcon}>
+              {error.message}
+            </Notice>
+          </div>
+        )}
 
-            <div className="space-y-1.5">
-              {/* Wide tracking and semibold weight makes Clash Display labels look incredibly sharp */}
-              <label className="text-[11px] font-semibold text-zinc-700 uppercase tracking-widest text-left block">
-                Work Email
-              </label>
-              <input
+        <div className={`space-y-[18px] ${locked || error?.kind === "generic" ? "" : "mt-2"}`}>
+          <Field label="Work email">
+            {(id) => (
+              <TextInput
+                id={id}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="vincent@auvra.io"
-                className="w-full px-3 py-2.5 bg-zinc-50/50 border border-zinc-200 rounded-md text-sm font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 focus:bg-white transition-colors"
+                placeholder="you@goauvra.com"
                 autoComplete="email"
+                required
               />
-            </div>
+            )}
+          </Field>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold text-zinc-700 uppercase tracking-widest">
-                  Password
-                </label>
-                <button type="button" className="text-xs font-semibold text-zinc-500 hover:text-black transition-colors">
-                  Forgot?
-                </button>
-              </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-3 pr-10 py-2.5 bg-zinc-50/50 border border-zinc-200 rounded-md text-sm font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 focus:bg-white transition-colors"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || !email || !password}
-              className="w-full h-10 mt-2 bg-black hover:bg-zinc-800 text-white text-sm font-semibold tracking-wide rounded-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Continue"}
-            </button>
-          </form>
-
+          <Field label="Password" error={error?.kind === "password" || locked ? "Incorrect password" : undefined}>
+            {(id) => (
+              <PasswordInput
+                id={id}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                invalid={error?.kind === "password" || locked}
+                required
+              />
+            )}
+          </Field>
         </div>
-        
+
+        {!locked && (
+          <div className="mt-[13px] flex items-center justify-between gap-3">
+            <label className="flex cursor-pointer items-center gap-2 text-[13px] text-[#1c1a18]">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="peer sr-only"
+              />
+              <span className="flex size-[18px] shrink-0 items-center justify-center rounded-[4px] border border-[#d4d7de] bg-white peer-checked:border-[#1c1a18] peer-checked:bg-[#1c1a18] peer-focus-visible:ring-2 peer-focus-visible:ring-[#3310be]/40">
+                {remember && <img src={checkboxCheckIcon} alt="" width={12} height={12} />}
+              </span>
+              Keep me signed in on this device
+            </label>
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password", { state: { email } })}
+              className="shrink-0 text-[13px] font-semibold text-[#3310be] hover:underline"
+            >
+              Forgot password?
+            </button>
+          </div>
+        )}
+
+        <PrimaryButton
+          type="submit"
+          loading={loading}
+          disabled={!locked && (!email || !password)}
+          className={locked ? "mt-[23px]" : "mt-[25px]"}
+        >
+          {locked ? "Reset password" : "Continue"}
+        </PrimaryButton>
+      </form>
+
+      <div className="mt-7">
+        <SessionFootnote />
       </div>
-    </div>
+    </AuthLayout>
   );
 }
