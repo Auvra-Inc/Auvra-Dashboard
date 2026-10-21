@@ -12,8 +12,12 @@ export const formatKpi = (k: Kpi) => {
       return usd(k.value);
     case "usd2":
       return usd(k.value, 2);
+    case "usdShort":
+      return usdShort(k.value);
     case "pct":
       return `${k.value}%`;
+    case "hours":
+      return `${k.value} h`;
     case "seconds":
       return `${k.value.toFixed(2)}s`;
     case "compact":

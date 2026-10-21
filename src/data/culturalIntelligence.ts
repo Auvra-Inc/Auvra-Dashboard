@@ -146,6 +146,11 @@ const COMMUNITIES: CommunitySpec[] = [
     badges: 214, verifiers: 6, ratePct: 83, members: 305, memberChange: 2.7, badgeChange: 7, rateChange: 2, activeKeepers: 5,
     languages: [{ name: "Gullah", badges: 214 }],
   },
+  {
+    id: "ife-heritage-society", name: "Ife Heritage Society", place: "Ile-Ife, Nigeria", country: "Nigeria", plan: "Community plan",
+    badges: 168, verifiers: 9, ratePct: 88, members: 412, memberChange: 3.9, badgeChange: 6, rateChange: 1, activeKeepers: 7,
+    languages: [{ name: "Yoruba", badges: 151 }, { name: "English", badges: 17 }],
+  },
 ];
 
 const LANGUAGES: (CiOverview["languages"][number] & { countries: Region[] })[] = [
@@ -174,6 +179,8 @@ const KEEPERS: (CommunityRecord["keepers"][number] & { communityId: string })[] 
   { communityId: "nairobi-oral-history", name: "Wanjiru Kamau", role: "Elder", language: "Kikuyu", checks: 77 },
   { communityId: "yoruba-diaspora-london", name: "Bisi Adeyemi", role: "Verifier", language: "Yoruba", checks: 58 },
   { communityId: "gullah-roots-society", name: "Ruth Grant", role: "Elder", language: "Gullah", checks: 44 },
+  { communityId: "ife-heritage-society", name: "Adebayo Fakunle", role: "Elder", language: "Yoruba", checks: 52 },
+  { communityId: "ife-heritage-society", name: "Morenike Ajayi", role: "Verifier", language: "Yoruba", checks: 29 },
 ];
 
 type BadgeSpec = Omit<BadgeRecord, "community" | "hidden" | "checks"> & {
@@ -191,9 +198,9 @@ const BADGES: BadgeSpec[] = [
     preservedOn: "2 Sep 2026", description: "A photo series on sisterhood and the joy of dressing together. Limited edition of 10.",
     status: "verified", communityId: "lagos-heritage-circle", honors: 12_900, notesCount: 248, price: 180, editions: 10,
     claims: [
-      { edition: "#1", collector: "Kofi Mensah", paid: 215, status: "delivered", date: "22 Sep", txId: "tx-48213" },
-      { edition: "#2", collector: "Amaka Nwosu", paid: 215, status: "delivered", date: "2 Oct", txId: "tx-49077" },
-      { edition: "#3", collector: "Tolu Adeyemi", paid: 215, status: "held", date: "Today", txId: "tx-50342" },
+      { edition: "#1", collector: "Kofi Mensah", paid: 215, status: "delivered", date: "22 Sep", txId: "TX-18213" },
+      { edition: "#2", collector: "Amaka Nwosu", paid: 215, status: "delivered", date: "2 Oct", txId: "TX-19077" },
+      { edition: "#3", collector: "Tolu Adeyemi", paid: 215, status: "held", date: "Today", txId: "TX-20419" },
       { edition: "#4–7", collector: "4 collectors", paid: 860, status: "delivered", date: "Sep–Oct" },
     ],
     notes: [
@@ -207,7 +214,7 @@ const BADGES: BadgeSpec[] = [
     status: "verified", communityId: "asante-kente-guild", honors: 8_420, notesCount: 131, price: 240, editions: 25,
     claims: [
       { edition: "#1–12", collector: "12 collectors", paid: 3_480, status: "delivered", date: "Aug–Sep" },
-      { edition: "#13", collector: "Efua Sackey", paid: 290, status: "held", date: "Yesterday", txId: "tx-50288" },
+      { edition: "#13", collector: "Efua Sackey", paid: 290, status: "held", date: "Yesterday", txId: "TX-20288" },
     ],
     notes: [{ id: "n1", author: "Abena K.", when: "3 days ago", body: "My grandfather wove this pattern for the Asantehene." }],
   },
@@ -241,6 +248,26 @@ const BADGES: BadgeSpec[] = [
     preservedOn: "17 Oct 2026", description: "Footage of the Sallah Durbar procession with commentary on the riders' regalia.",
     status: "disputed", communityId: "lagos-heritage-circle", decidedBy: "Hauwa M.", decidedWhen: "3 days ago", honors: 940, notesCount: 21,
     notes: [{ id: "n1", author: "Hauwa M.", when: "3 days ago", body: "Some of the titles in the commentary are wrong. Asking the creator to fix them." }],
+  },
+  // Reported in Trust and Safety
+  {
+    id: "sacred-mask-of-ife", title: "Sacred Mask of Ife", kind: "contribution", category: "Ritual", creator: "Ife Heritage Society", city: "Ile-Ife",
+    preservedOn: "4 Oct 2026", description: "A ceremonial mask with a story of its use in a closed rite.",
+    status: "verified", communityId: "ife-heritage-society", decidedBy: "Morenike A.", decidedWhen: "5 Oct", honors: 2_140, notesCount: 58,
+    notes: [{ id: "n1", author: "Adebayo F.", when: "Yesterday", body: "Parts of this rite are not meant to be shown outside the shrine." }],
+  },
+  {
+    id: "market-day", title: "Market Day", kind: "contribution", category: "Story", creator: "Segun Ade", city: "Lagos",
+    preservedOn: "9 Oct 2026", description: "A morning at Balogun market told through the traders' calls and greetings.",
+    status: "verified", communityId: "lagos-heritage-circle", decidedBy: "Funmi O.", decidedWhen: "10 Oct", honors: 1_380, notesCount: 27,
+    notes: [{ id: "n1", author: "Chidi I.", when: "2 days ago", body: "Some of the greetings are Ghanaian, not Yoruba." }],
+  },
+  {
+    id: "queens-of-the-coast", title: "Queens of the Coast", kind: "collectible", category: "Music", creator: "Kwame Mensah", city: "Accra",
+    preservedOn: "13 Oct 2026", description: "A highlife recording dedicated to the market queens of Accra. Limited edition of 15.",
+    status: "verified", communityId: "accra-highlife-society", honors: 940, notesCount: 18, price: 120, editions: 15,
+    claims: [{ edition: "#1–4", collector: "4 collectors", paid: 480, status: "delivered", date: "Oct" }],
+    notes: [{ id: "n1", author: "Ama O.", when: "3 days ago", body: "This sounds like a track I heard on the radio years ago." }],
   },
   // Waiting for community review
   {
@@ -291,7 +318,8 @@ const shortName = (name: string) => {
   return last ? `${first} ${last[0]}.` : first;
 };
 
-const hiddenBadges = new Set<string>();
+// Sacred Mask of Ife was hidden automatically after its third report
+const hiddenBadges = new Set<string>(["sacred-mask-of-ife"]);
 const nudged = new Set<string>();
 
 /* ---------- Overview ---------- */
@@ -471,12 +499,33 @@ export async function getBadgeRecord(id: string): Promise<BadgeRecord | null> {
   };
 }
 
+export async function getOwnershipBadgeRecords(): Promise<BadgeRecord[]> {
+  const records = await Promise.all(BADGES.map((badge) => getBadgeRecord(badge.id)));
+  return records.filter((badge): badge is BadgeRecord => badge !== null);
+}
+
 export async function setBadgeHidden(id: string, hidden: boolean, reason: string) {
   // return api.culture.setBadgeHidden(id, { hidden, reason }); recorded in the audit log
   await delay(500);
   void reason;
   if (hidden) hiddenBadges.add(id);
   else hiddenBadges.delete(id);
+}
+
+// Trust and Safety decisions: restrict to the community, or send back to its Keepers for review
+export async function setBadgeStatus(id: string, status: VerificationStatus, by: string) {
+  // return api.culture.setBadgeStatus(id, { status }); recorded in the audit log
+  await delay(300);
+  const b = BADGES.find((x) => x.id === id);
+  if (!b) return;
+  b.status = status;
+  if (status === "pending") {
+    b.waitingDays = 0;
+    b.keepersAssigned = KEEPERS.filter((k) => k.communityId === b.communityId).length;
+  } else {
+    b.decidedBy = shortName(by);
+    b.decidedWhen = "Just now";
+  }
 }
 
 /* ---------- Community record ---------- */
@@ -547,6 +596,16 @@ export async function nudgeKeepers(badgeId: string) {
   await delay(500);
   nudged.add(badgeId);
 }
+
+// Synchronous lookups so Transactions can name and link the Badge behind a claim
+export function badgeSummary(id: string) {
+  const b = BADGES.find((x) => x.id === id);
+  return b ? { id: b.id, title: b.title, creator: b.creator, price: b.price ?? 0, editions: b.editions ?? 0 } : null;
+}
+export const findBadgeByTitle = (title: string) => {
+  const b = BADGES.find((x) => x.title === title);
+  return b ? badgeSummary(b.id) : null;
+};
 
 export const COMMUNITY_OPTIONS = COMMUNITIES.map((c) => ({ value: c.id, label: c.name }));
 export { REGIONS };

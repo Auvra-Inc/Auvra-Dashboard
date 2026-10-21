@@ -1,6 +1,7 @@
-import { useEffect, useId, useRef } from "react";
+import { useId, useRef } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useDialogFocus } from "./useDialogFocus";
 import closeIcon from "../../assets/dashboard/close-14.svg";
 
 type ModalProps = {
@@ -12,42 +13,24 @@ type ModalProps = {
   width?: number;
 };
 
-const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+export function CloseButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Close"
+      className="flex size-10 shrink-0 items-center justify-center rounded-[10px] border border-[#eceef2] hover:bg-[#f4f5f8]"
+    >
+      <img src={closeIcon} alt="" width={14} height={14} />
+    </button>
+  );
+}
 
 // Centred dialog over a dimmed page; Escape and the backdrop close it, Tab stays inside
 export function Modal({ title, onClose, children, footer, width = 520 }: ModalProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
-  const onCloseRef = useRef(onClose);
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    panelRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseRef.current();
-      if (e.key !== "Tab" || !panelRef.current) return;
-      const items = [...panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)];
-      if (!items.length) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      previous?.focus();
-    };
-  }, []);
+  useDialogFocus(panelRef, onClose);
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -64,14 +47,7 @@ export function Modal({ title, onClose, children, footer, width = 520 }: ModalPr
           <h2 id={titleId} className="pt-2 text-[20px] font-medium">
             {title}
           </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="flex size-10 shrink-0 items-center justify-center rounded-[10px] border border-[#eceef2] hover:bg-[#f4f5f8]"
-          >
-            <img src={closeIcon} alt="" width={14} height={14} />
-          </button>
+          <CloseButton onClick={onClose} />
         </div>
         <div className="mt-5">{children}</div>
         {footer && <div className="mt-6 flex flex-wrap justify-end gap-2.5">{footer}</div>}

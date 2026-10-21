@@ -29,6 +29,38 @@ export function KpiCard({ kpi, icon }: { kpi: Kpi; icon: string }) {
   );
 }
 
+// KPI card where the whole card is clickable; is clickable: the title carries a stretched link, the info tip stays above it
+export function KpiLinkCard({ kpi, icon, to, onClick, active = false }: { kpi: Kpi; icon: string; to?: string; onClick?: () => void; active?: boolean }) {
+  const stretch = "outline-none after:absolute after:inset-0 after:rounded-[16px] focus-visible:after:ring-2 focus-visible:after:ring-[#3310be]/40";
+  const title = to ? (
+    <Link to={to} className={stretch}>
+      {kpi.label}
+    </Link>
+  ) : (
+    <button type="button" onClick={onClick} aria-pressed={active} className={`text-left ${stretch}`}>
+      {kpi.label}
+    </button>
+  );
+  return (
+    <Card className={`relative px-[15px] pb-[15px] pt-[13px] transition-colors hover:border-[#d9dce3] hover:bg-[#fcfcfd] ${active ? "border-[#1c1a18]!" : ""}`}>
+      <div className="flex min-w-0 items-center gap-2.5 pr-6">
+        <span className="flex size-[26px] shrink-0 items-center justify-center rounded-[7px] bg-[#f4f5f8]">
+          <img src={icon} alt="" width={14} height={14} />
+        </span>
+        <h2 className="truncate text-[14px] font-medium text-[#1c1a18]">{title}</h2>
+      </div>
+      <div className="absolute right-[15px] top-[19px] z-10 flex">
+        <InfoTip tip={{ title: kpi.label, body: kpi.tip }} align="end" />
+      </div>
+      <div className="mt-[22px] flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span className="text-[30px] font-light leading-[36px] tracking-[-0.8px] text-[#1c1a18]">{formatKpi(kpi)}</span>
+        {kpi.change !== undefined && <TrendBadge value={kpi.change} unit={kpi.changeUnit} good={kpi.upIsGood ? kpi.change >= 0 : kpi.change <= 0} />}
+      </div>
+      <div className="mt-2 text-[11px] text-[#6b7180]">{kpi.note ?? "vs previous 30 days"}</div>
+    </Card>
+  );
+}
+
 export function KpiSkeleton() {
   return (
     <Card className="space-y-4 p-[15px]">

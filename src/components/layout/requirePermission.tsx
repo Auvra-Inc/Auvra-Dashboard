@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { can, useSessionUser } from "../../auth/session";
+import { can, SUPER_ADMIN, useSessionUser } from "../../auth/session";
 import type { Permission } from "../../auth/session";
 import lockIcon from "../../assets/dashboard/lock-24.svg";
 import homeIcon from "../../assets/dashboard/home-16.svg";
@@ -54,6 +54,12 @@ type RequirePermissionProps = {
 export function RequirePermission({ permission, pageName, children }: RequirePermissionProps) {
   const user = useSessionUser();
   if (can(user, permission)) return <>{children}</>;
+  return <NoAccess pageName={pageName} role={user?.role ?? "Viewer"} />;
+}
+
+export function RequireSuperAdmin({ pageName, children }: Omit<RequirePermissionProps, "permission">) {
+  const user = useSessionUser();
+  if (user?.role === SUPER_ADMIN) return <>{children}</>;
   return <NoAccess pageName={pageName} role={user?.role ?? "Viewer"} />;
 }
 

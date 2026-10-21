@@ -122,7 +122,7 @@ function TrustCard({ openReports }: { openReports: number }) {
         {openReports} reports to review.
       </div>
       <Link
-        to="/app/safety"
+        to="/app/safety/reports"
         className="mx-[11px] mb-[11px] mt-auto flex h-[52px] items-center justify-center rounded-[10px] border border-white/8 bg-[#1b1f2a] text-[14px] text-white hover:bg-[#232838]"
       >
         Review now

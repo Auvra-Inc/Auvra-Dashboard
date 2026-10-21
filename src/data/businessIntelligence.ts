@@ -12,7 +12,8 @@ export type Kpi = {
   label: string;
   value: number;
   // seconds: 1.42s · compact: 38.4K · decimal: 35.1
-  format: "usd" | "usd2" | "pct" | "count" | "seconds" | "compact" | "decimal";
+  // usdShort: $777K
+  format: "usd" | "usd2" | "usdShort" | "pct" | "count" | "seconds" | "hours" | "compact" | "decimal";
   // Omitted for counts with no trend (e.g. Waiting for review)
   change?: number;
   // "s" for latency changes, "" for plain scores (BLEU)

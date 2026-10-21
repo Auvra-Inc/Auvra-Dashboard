@@ -93,7 +93,7 @@ export function PrimaryAction({ children, ...props }: ButtonHTMLAttributes<HTMLB
 // Initials tile; colour is picked from a fixed set so a person keeps the same colour everywhere
 const AVATAR_COLORS = ["#8e2b2b", "#2f4a44", "#5b4a3a", "#3e3a36", "#3d3a5c", "#4a3b2f"];
 
-export function Avatar({ name, size = 44, color }: { name: string; size?: number; color?: string }) {
+export function Avatar({ name, size = 44, color, className = "rounded-[10px] text-[14px]" }: { name: string; size?: number; color?: string; className?: string }) {
   const hash = [...name].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
   const initials = name
     .split(/\s+/)
@@ -105,7 +105,7 @@ export function Avatar({ name, size = 44, color }: { name: string; size?: number
     <span
       aria-hidden
       style={{ width: size, height: size, background: color ?? AVATAR_COLORS[hash % AVATAR_COLORS.length] }}
-      className="flex shrink-0 items-center justify-center rounded-[10px] text-[14px] font-semibold text-white"
+      className={`flex shrink-0 items-center justify-center font-semibold text-white ${className}`}
     >
       {initials}
     </span>
@@ -219,6 +219,6 @@ const PILL_TONES = {
 export type PillTone = keyof typeof PILL_TONES;
 
 // Small status label (Upgrade, Cancelled, churn rate)
-export function StatusPill({ tone, children }: { tone: PillTone; children: ReactNode }) {
-  return <span className={`inline-flex h-[22px] items-center whitespace-nowrap rounded-[6px] px-2 text-[11px] font-medium ${PILL_TONES[tone]}`}>{children}</span>;
+export function StatusPill({ tone, children, className = "" }: { tone: PillTone; children: ReactNode; className?: string }) {
+  return <span className={`inline-flex h-[22px] items-center whitespace-nowrap rounded-[6px] px-2 text-[11px] font-medium ${PILL_TONES[tone]} ${className}`}>{children}</span>;
 }

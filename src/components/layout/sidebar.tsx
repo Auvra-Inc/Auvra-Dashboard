@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { LogOut, UserPlus, X } from "lucide-react";
 import { NAV_ITEMS, SETTINGS_ITEM } from "./navConfig";
 import type { NavItem } from "./navConfig";
-import { can, clearSession, initials, useSessionUser } from "../../auth/session";
+import { can, clearSession, initials, SUPER_ADMIN, useSessionUser } from "../../auth/session";
 import logoMark from "../../assets/dashboard/logo-mark.svg";
 
 // The Figma icons have a fixed stroke colour, so they're drawn through a mask to follow the active/inactive text colour
@@ -172,7 +172,8 @@ type SidebarProps = {
 
 export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   const user = useSessionUser();
-  const items = NAV_ITEMS.filter((item) => can(user, item.permission));
+  const isSuperAdmin = user?.role === SUPER_ADMIN;
+  const items = NAV_ITEMS.filter((item) => item.permission === "invites" ? isSuperAdmin : can(user, item.permission));
   const showSettings = can(user, SETTINGS_ITEM.permission);
 
   useEffect(() => {

@@ -18,7 +18,7 @@ export type NavItem = {
   icon: string | "invites";
 };
 
-// Order follows the Figma sidebar; Invite Management has no design, so it sits after Lens AI
+// Order follows the Figma sidebar, with Invite Management after Lens AI.
 export const NAV_ITEMS: NavItem[] = [
   { label: "Home", path: "/app", permission: "home", icon: homeIcon, subtitle: "" },
   { label: "Business Intelligence", path: "/app/business", permission: "business", icon: businessIcon, subtitle: "Financial health of Auvra · Last 12 months" },
@@ -28,7 +28,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Ownership", path: "/app/ownership", permission: "ownership", icon: ownershipIcon, subtitle: "Badge ownership and provenance" },
   { label: "Trust and Safety", path: "/app/safety", permission: "safety", icon: safetyIcon, subtitle: "Keep Auvra culturally safe, legal and trustworthy" },
   { label: "Lens AI", path: "/app/lens", permission: "lens", icon: lensIcon, subtitle: "Auvra's intelligence layer · Last 7 days" },
-  { label: "Invite Management", path: "/app/invites", permission: "invites", icon: "invites", subtitle: "Who can access Auvra Admin" },
+  { label: "Invite Management", path: "/app/invites", permission: "invites", icon: "invites", subtitle: "Only Super Admins can invite people and change roles" },
 ];
 
 export const SETTINGS_ITEM: NavItem = {
